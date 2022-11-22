@@ -1,3 +1,4 @@
+import 'package:flair_app/screens/forgot_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class _LoginDemoState extends State<LoginDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5D0D6),
+      backgroundColor: Color.fromARGB(255, 255, 252, 253),
      /* appBar: AppBar(
         title: const Text("Login Page"),
       ),*/
@@ -90,7 +91,7 @@ class _LoginDemoState extends State<LoginDemo> {
               width: double.infinity,
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-              child: FlatButton(
+              child: TextButton(
                 onPressed: () {
                  /* Navigator.push(
                       context, MaterialPageRoute(builder: (_) => HomePage()));*/
@@ -101,9 +102,9 @@ class _LoginDemoState extends State<LoginDemo> {
                 ),
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: (){
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword()));
               },
               child: const Text(
                 'Forgot Password',
