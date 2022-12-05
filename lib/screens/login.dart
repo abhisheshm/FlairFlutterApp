@@ -39,7 +39,7 @@ class _LoginDemoState extends State<LoginDemo> {
       print('SUccess');
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      Navigator.of(context).push(MaterialPageRoute(builder: ((context) => HomeScreen())));
+      Navigator.of(context).push(MaterialPageRoute(builder: ((context) => Home())));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
