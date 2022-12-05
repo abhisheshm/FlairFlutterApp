@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
+import 'home/upper_tab_bar.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -95,14 +97,17 @@ class _HomeScreenState extends State<HomeScreen> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
+
     Text(
       ' Like',
       style: optionStyle,
     ),
-    Text(
+    UpperTabBar(),
+
+  /*  Text(
       ' Home',
       style: optionStyle,
-    ),
+    ),*/
     Text(
       ' Chat',
       style: optionStyle,
