@@ -91,14 +91,50 @@ class _HomeScreenState extends State<HomeScreen> {
     Text('Favourites'),
   ];
 
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      ' Like',
+      style: optionStyle,
+    ),
+    Text(
+      ' Home',
+      style: optionStyle,
+    ),
+    Text(
+      ' Chat',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.title),
+        backgroundColor: Colors.transparent,
+        bottomOpacity: 0.0,
+        elevation: 0.0,
+        title: Container(
+            width: 200,
+            height: 50,
+            /*decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(50.0)),*/
+            child: Image.asset('assets/images/logo.png')),
         centerTitle: true,
         leading: DrawerWidget(),
+      ),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: Container(
           decoration: const BoxDecoration(
@@ -119,6 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
                 BottomNavigationBarItem(icon: Icon(Icons.message), label: ""),
               ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.blue,
+              onTap: _onItemTapped,
             ),
           )),
     );
@@ -264,7 +303,10 @@ class DrawerWidget extends StatelessWidget {
       onPressed: () {
         ZoomDrawer.of(context)!.toggle();
       },
-      icon: const Icon(Icons.menu),
+      icon: const Icon(
+        Icons.menu,
+        color: Colors.blue,
+      ),
     );
   }
 }
