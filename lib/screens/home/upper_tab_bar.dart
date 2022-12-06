@@ -77,8 +77,8 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(5.0)),
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://img.zcool.cn/community/012157578c405f0000012e7e69e7cd.jpg@1280w_1l_2o_100sh.jpg'),
+                          image: AssetImage(
+                              "assets/images/card_bg.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -91,8 +91,8 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(5.0)),
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://img.zcool.cn/community/012157578c405f0000012e7e69e7cd.jpg@1280w_1l_2o_100sh.jpg'),
+                          image: AssetImage(
+                              "assets/images/card_bg.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -106,8 +106,8 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(5.0)),
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://img.zcool.cn/community/012157578c405f0000012e7e69e7cd.jpg@1280w_1l_2o_100sh.jpg'),
+                          image: AssetImage(
+                              "assets/images/card_bg.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -121,8 +121,8 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(5.0)),
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://img.zcool.cn/community/012157578c405f0000012e7e69e7cd.jpg@1280w_1l_2o_100sh.jpg'),
+                          image: AssetImage(
+                              "assets/images/card_bg.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -136,8 +136,8 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(5.0)),
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://img.zcool.cn/community/012157578c405f0000012e7e69e7cd.jpg@1280w_1l_2o_100sh.jpg'),
+                          image: AssetImage(
+                              "assets/images/card_bg.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -152,8 +152,8 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(5.0)),
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://img.zcool.cn/community/012157578c405f0000012e7e69e7cd.jpg@1280w_1l_2o_100sh.jpg'),
+                          image: AssetImage(
+                              "assets/images/card_bg.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
