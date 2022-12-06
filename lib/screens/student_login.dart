@@ -1,48 +1,47 @@
 import 'package:flair_app/screens/forgot_password.dart';
 import 'package:flair_app/screens/home_page.dart';
+import 'package:flair_app/screens/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 
-class Login extends StatelessWidget {
+class StudentLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginDemo(),
+      home: StudentLoginDemo(),
     );
   }
 }
 
-class LoginDemo extends StatefulWidget {
+class StudentLoginDemo extends StatefulWidget {
   @override
-  _LoginDemoState createState() => _LoginDemoState();
+  _StudentLoginDemoState createState() => _StudentLoginDemoState();
 }
 
-class _LoginDemoState extends State<LoginDemo> {
+class _StudentLoginDemoState extends State<StudentLoginDemo> {
   TextEditingController usernameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
   Future handleLogin() async {
-    if(usernameController.text != "" && passwordController.text != ""){
-      final response = await http.post(Uri.parse('https://e-scheduler.com/hef/api_fair/Fair/login'),
-      body: <String, String>{
-        'email': usernameController.text,
-        'password': passwordController.text
-      },
-      headers: <String, String>{
-        'X-Requested-With': 'XMLHttpRequest',
-      } 
-      );
+    if(usernameController.text != ""){
+      // final response = await http.post(Uri.parse('https://e-scheduler.com/hef/api_fair/Fair/login'),
+      // body: <String, String>{
+      //   'email': usernameController.text,
+      // },
+      // headers: <String, String>{
+      //   'X-Requested-With': 'XMLHttpRequest',
+      // } 
+      // );
 
-      if (response.statusCode == 200) {
-        print('SUccess');
+      // if (response.statusCode == 200) {
+      //   print('SUccess');
         // If the server did return a 200 OK response,
         // then parse the JSON.
         Navigator.of(context).push(MaterialPageRoute(builder: ((context) => Home())));
-        return;
-      }
+         return;
+      // }
     }
     Widget okButton = TextButton(
       child: Text("OK"),
@@ -52,7 +51,7 @@ class _LoginDemoState extends State<LoginDemo> {
     );
     // set AlertDialog
     AlertDialog alert = AlertDialog(
-      content: Text("Please enter valid username and password."),
+      content: Text("Please enter valid username"),
       actions: [
         okButton,
       ],
@@ -111,24 +110,7 @@ class _LoginDemoState extends State<LoginDemo> {
                     hintText: 'Enter valid email id as abc@gmail.com'),
               ),
             ),
-             Padding(
-              padding: EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: passwordController,
-               // obscureText: true,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock),
-                    border: OutlineInputBorder(
-                      borderRadius:  BorderRadius.circular(10.0),
-                    ),
-
-                    labelText: 'Password',
-                    hintText: 'Enter secure password'),
-              ),
-            ),
-
+             
             const SizedBox(
               height: 50,
             ),
@@ -150,10 +132,10 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             TextButton(
               onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Login()));
               },
               child: const Text(
-                'Forgot Password',
+                'Admin Login',
                 style: TextStyle(color: Colors.blue, fontSize: 15),
               ),
             ),
