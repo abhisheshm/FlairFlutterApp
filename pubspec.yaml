@@ -33,6 +33,7 @@ dependencies:
   flutter_zoom_drawer: ^3.0.3
   custom_sliding_segmented_control: ^1.7.3
   get: ^4.6.5
+  url_launcher: ^6.0.10
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -63,6 +64,7 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/card_bg.png
+    - assets/images/auditoriumbg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

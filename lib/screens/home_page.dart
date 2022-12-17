@@ -1,6 +1,12 @@
+import 'package:flair_app/model/resource.dart';
+import 'package:flair_app/network/client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../model/auditorium.dart';
+import '../model/video_vault.dart';
+import 'home/auditorium_list.dart';
 import 'home/upper_tab_bar.dart';
 
 class Home extends StatefulWidget {
@@ -12,6 +18,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int currentIndex = 0;
+
+  //sts
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +58,7 @@ class _HomeState extends State<Home> {
         return const HomeScreen(
           title: "Auditorium",
         );
+
       case 4:
         return const HomeScreen(
           title: "Resource",
@@ -60,7 +69,7 @@ class _HomeState extends State<Home> {
         );
       case 6:
         return const HomeScreen(
-          title: "Video Desk",
+          title: "Video Vault",
         );
       case 7:
         return const HomeScreen(
@@ -86,6 +95,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Auditorium>? auditoriumList;
+  List<VideoVault>? videoVaultList;
+  List<ResourceDetails>? resourceDetailsList;
+  var isLoadedAudi = false;
+  var isLoadedVideo = false;
+  var isLoadedRes = false;
+
   int selectedIndex = 0;
   final widgetOptions = [
     Text('Beer List'),
@@ -93,18 +109,55 @@ class _HomeScreenState extends State<HomeScreen> {
     Text('Favourites'),
   ];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAuditoriumData();
+    getVideoVaultData();
+    getResource();
+  }
+
+  getAuditoriumData() async {
+    print("kkkkk");
+    auditoriumList = await Client().getAuditorium();
+    if (auditoriumList != null) {
+      setState(() {
+        isLoadedAudi = true;
+      });
+    }
+  }
+
+  getVideoVaultData() async {
+    print("kkkkk");
+    videoVaultList = await Client().getVideoVault();
+    if (videoVaultList != null) {
+      setState(() {
+        isLoadedVideo = true;
+      });
+    }
+  }
+  getResource() async {
+    print("kkkkk");
+    resourceDetailsList = await Client().getResource();
+    if (resourceDetailsList != null) {
+      setState(() {
+        isLoadedRes = true;
+      });
+    }
+  }
+
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
-
     Text(
       ' Like',
       style: optionStyle,
     ),
     UpperTabBar(),
 
-  /*  Text(
+    /*  Text(
       ' Home',
       style: optionStyle,
     ),*/
@@ -138,9 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         leading: DrawerWidget(),
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: getPage(widget.title),
       bottomNavigationBar: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -172,6 +223,207 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  Widget getPage(String page) {
+    switch (page) {
+      case "Video Vault":
+        return Center(
+          child: getVideoVaultPage(),
+        );
+        break;
+      case "Auditorium":
+        return Center(
+          child: getAuditoriumPage(),
+        );
+        break;
+        case "Resource":
+        return Center(
+          child: getResourcePage(),
+        );
+        break;
+    }
+    return const Center(
+      child: Text("Coming Soon"),
+    );
+  }
+
+  Widget getAuditoriumPage() {
+    return Visibility(
+      visible: isLoadedAudi,
+      replacement: const Center(
+        child: CircularProgressIndicator(),
+      ),
+      child: ListView.builder(
+          itemCount: auditoriumList?.length,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: const EdgeInsets.all(20),
+              child: InkWell(
+                onTap: () {
+                  _launchInBrowser(auditoriumList?[index].link);
+                },
+                child: Column(
+                  children: [
+                    /*Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${auditoriumList?[index].title}"),
+                    ),*/
+
+              Card(child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: <Widget>[
+                      Image(
+                        image: new AssetImage('assets/images/auditoriumbg.png'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10),
+                        child: Center(child: Text("${auditoriumList?[index].title}"),),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: RaisedButton(
+                              onPressed: () => _launchInBrowser(auditoriumList?[index].link),
+                              child: const Text("Open")
+                          )
+                      ),
+                    ]
+                ),)
+                    /*Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset('assets/images/auditoriumbg.png')),
+                    ),*/
+              )],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+  Widget getResourcePage() {
+    return Visibility(
+      visible: isLoadedRes,
+      replacement: const Center(
+        child: CircularProgressIndicator(),
+      ),
+      child: ListView.builder(
+          itemCount: resourceDetailsList?.length,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: const EdgeInsets.all(20),
+              child: InkWell(
+                onTap: () {
+                  _launchInBrowser(resourceDetailsList?[index].linkLink);
+                },
+                child: Column(
+                  children: [
+                    /*Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${auditoriumList?[index].title}"),
+                    ),*/
+
+              Card(child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: <Widget>[
+                      Image(
+                        image: new AssetImage('assets/images/auditoriumbg.png'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10),
+                        child: Center(child: Text("${resourceDetailsList?[index].linkText}"),),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: RaisedButton(
+                              onPressed: () => _launchInBrowser(resourceDetailsList?[index].linkLink),
+                              child: const Text("Open")
+                          )
+                      ),
+                    ]
+                ),)
+                    /*Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset('assets/images/auditoriumbg.png')),
+                    ),*/
+              )],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
+  Widget getVideoVaultPage() {
+    return Visibility(
+      visible: isLoadedVideo,
+      replacement: const Center(
+        child: CircularProgressIndicator(),
+      ),
+      child: ListView.builder(
+          itemCount: videoVaultList?.length,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: const EdgeInsets.all(10),
+              child: InkWell(
+                onTap: () {
+
+                },
+                child: Column(
+                  children: [
+                   /* Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${videoVaultList?[index].linkText}"),
+                    ),*/
+
+                    Card(child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: <Widget>[
+                          Image(
+                            image: new AssetImage('assets/images/auditoriumbg.png'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10),
+                            child: Center(child: Text("${videoVaultList?[index].linkText}"),),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: RaisedButton(
+                                  onPressed: () => _launchInBrowser(videoVaultList?[index].linkContnent),
+                                  child: const Text("Play Now")
+                              )
+                          ),
+                        ]
+                    ),),)
+                    /*Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset('assets/images/card_bg.png')),
+                    ),*/
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
+  Future<void> _launchInBrowser(String? url) async {
+    print("lllllllll ${url}");
+    final uri = Uri.parse(url!);
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
   }
 }
 
@@ -269,7 +521,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
           Container(
             margin: const EdgeInsets.only(top: 20, left: 10, bottom: 20),
           ),
-          drawerList("Sign-out  -->", 8),
+          drawerList("Sign-out", 8),
         ],
       ),
     );
