@@ -13,7 +13,7 @@ class Auditorium {
     this.id,
     this.fairId,
     this.title,
-    this.startDatetime,
+    required this.startDatetime,
     this.endDatetime,
     this.active,
     this.link,
@@ -23,7 +23,7 @@ class Auditorium {
   String? id;
   String? fairId;
   String? title;
-  DateTime? startDatetime;
+  DateTime startDatetime;
   DateTime? endDatetime;
   String? active;
   String? link;
