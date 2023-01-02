@@ -1,8 +1,11 @@
 import 'package:flair_app/model/resource.dart';
 import 'package:flair_app/network/client.dart';
+import 'package:flair_app/screens/login.dart';
+import 'package:flair_app/screens/student_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flair_app/storage/shared_preference.dart';
 
 import '../model/auditorium.dart';
 import '../model/video_vault.dart';
@@ -284,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: RaisedButton(
+                          child: TextButton(
                               onPressed: () => _launchInBrowser(auditoriumList?[index].link),
                               child: const Text("Open")
                           )
@@ -339,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: RaisedButton(
+                          child: TextButton(
                               onPressed: () => _launchInBrowser(resourceDetailsList?[index].linkLink),
                               child: const Text("Open")
                           )
@@ -395,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: RaisedButton(
+                              child: TextButton(
                                   onPressed: () => _launchInBrowser(videoVaultList?[index].linkContnent),
                                   child: const Text("Play Now")
                               )
@@ -437,6 +440,24 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreenState extends State<DrawerScreen> {
+
+  String uName = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getUserName().then((username) => {
+      if(username == null) {
+        Navigator.of(context).push(MaterialPageRoute(builder: ((context) => StudentLogin())))
+      }
+      else{
+        setState(() {
+          uName = username;
+        })
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -453,7 +474,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.white,
             ),
           ),
-          drawerList("Profile", 0),
+          drawerList(uName, 0),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -527,10 +548,18 @@ class _DrawerScreenState extends State<DrawerScreen> {
     );
   }
 
+  Future signOutUser() async {
+    await removeUserName();
+    await removeUserId();
+    Navigator.of(context).push(MaterialPageRoute(builder: ((context) => StudentLogin())));
+  }
+
   Widget drawerList(String text, int index) {
     return GestureDetector(
       onTap: () {
-        widget.setIndex(index);
+        if(index == 8){
+          signOutUser();
+        }
       },
       child: Container(
         margin: EdgeInsets.only(left: 20, bottom: 12),
@@ -558,6 +587,7 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
+        print("hre");
         ZoomDrawer.of(context)!.toggle();
       },
       icon: const Icon(

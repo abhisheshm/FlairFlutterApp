@@ -1,9 +1,9 @@
-import 'package:flair_app/screens/forgot_password.dart';
 import 'package:flair_app/screens/home_page.dart';
 import 'package:flair_app/screens/login.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flair_app/model/login_response.dart';
+import 'package:flair_app/network/client.dart';
+import 'package:flair_app/storage/shared_preference.dart';
 
 
 class StudentLogin extends StatelessWidget {
@@ -24,24 +24,29 @@ class StudentLoginDemo extends StatefulWidget {
 class _StudentLoginDemoState extends State<StudentLoginDemo> {
   TextEditingController usernameController = TextEditingController();
 
+
+  Future resolveUser() async {
+    String? uName = await getUserName();
+    if(uName != null) {
+      Navigator.of(context).push(MaterialPageRoute(builder: ((context) => Home())));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    resolveUser();
+  }
+
   Future handleLogin() async {
     if(usernameController.text != ""){
-      // final response = await http.post(Uri.parse('https://e-scheduler.com/hef/api_fair/Fair/login'),
-      // body: <String, String>{
-      //   'email': usernameController.text,
-      // },
-      // headers: <String, String>{
-      //   'X-Requested-With': 'XMLHttpRequest',
-      // } 
-      // );
-
-      // if (response.statusCode == 200) {
-      //   print('SUccess');
-        // If the server did return a 200 OK response,
-        // then parse the JSON.
+      UserDetail? userDetail = await Client().loginAsync(usernameController.text);
+      if(userDetail != null){
+        await setUserId(userDetail.userId ?? "");
+        await setUserName(userDetail.userName ?? "");
         Navigator.of(context).push(MaterialPageRoute(builder: ((context) => Home())));
-         return;
-      // }
+      }
+      return;
     }
     Widget okButton = TextButton(
       child: Text("OK"),
