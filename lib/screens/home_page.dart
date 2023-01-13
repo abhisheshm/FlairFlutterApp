@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../model/auditorium.dart';
+import '../model/booth_list.dart';
 import '../model/video_vault.dart';
 import 'home/auditorium_list.dart';
 import 'home/upper_tab_bar.dart';
@@ -45,11 +46,11 @@ class _HomeState extends State<Home> {
     switch (currentIndex) {
       case 0:
         return const HomeScreen(
-          title: "Profile",
+          title: "Lobby",
         );
       case 1:
         return const HomeScreen(
-          title: "Lobby",
+          title: "Profile",
         );
       case 2:
         return const HomeScreen(
@@ -74,7 +75,7 @@ class _HomeState extends State<Home> {
         );
       case 7:
         return const HomeScreen(
-          title: "Booth",
+          title: "Networking",
         );
       case 8:
         return const HomeScreen(
@@ -99,9 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late List<Auditorium> auditoriumList;
   List<VideoVault>? videoVaultList;
   List<ResourceDetails>? resourceDetailsList;
+  List<BoothList>? boothList;
   var isLoadedAudi = false;
   var isLoadedVideo = false;
   var isLoadedRes = false;
+  var isLoadedBooth = false;
 
   int selectedIndex = 0;
   final widgetOptions = [
@@ -114,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getBoothList();
     getAuditoriumData();
     getVideoVaultData();
     getResource();
@@ -149,6 +153,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  getBoothList() async {
+    print("kkkkk");
+    boothList = await Client().getBoothList();
+    if (boothList != null) {
+      setState(() {
+        isLoadedBooth = true;
+      });
+    }
+  }
+
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -157,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ' Like',
       style: optionStyle,
     ),
-    UpperTabBar(),
+   // UpperTabBar(),
 
     /*  Text(
       ' Home',
@@ -194,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: DrawerWidget(),
       ),
       body: getPage(widget.title),
-      bottomNavigationBar: Container(
+      /*bottomNavigationBar: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
                 topRight: Radius.circular(30), topLeft: Radius.circular(30)),
@@ -217,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
               selectedItemColor: Colors.blue,
               onTap: _onItemTapped,
             ),
-          )),
+          )),*/
     );
   }
 
@@ -229,6 +243,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget getPage(String page) {
     switch (page) {
+      case "Lobby":
+        return Center(
+          child: getBoothPage(),
+        );
+        break;
+
       case "Video Vault":
         return Center(
           child: getVideoVaultPage(),
@@ -324,11 +344,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  String convertDateTime(String? date){
-     DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm");
-     DateTime dateTime = dateFormat.parse(date!);
-     return dateTime.toString();
-
+  String convertDateTime(String? date) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+    DateTime dateTime = dateFormat.parse(date!);
+    return dateTime.toString();
   }
 
   Widget getResourcePage() {
@@ -368,7 +387,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   bottom: 120, left: 10, right: 10),
                               child: Center(
                                 child: Text(
-                                    "${resourceDetailsList?[index].linkText}",style: TextStyle(color: Colors.white),),
+                                  "${resourceDetailsList?[index].linkText}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                             Padding(
@@ -392,6 +413,94 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
     );
   }
+
+  Widget getBoothPage() {
+    return Visibility(
+      visible: isLoadedBooth,
+      replacement: const Center(
+        child: CircularProgressIndicator(),
+      ),
+      child: ListView.builder(
+          itemCount: boothList?.length,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: const EdgeInsets.all(20),
+              child: InkWell(
+                onTap: () {
+                  /*Navigator.of(context).push(
+                      MaterialPageRoute(builder: ((context) => UpperTabBar())));*/
+                },
+                child: Column(
+                  children: [
+                    /*Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${auditoriumList?[index].title}"),
+                    ),*/
+
+                    Card(
+                        child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: <Widget>[
+                            Image(
+                              image: new AssetImage(
+                                  cityImage(boothList?[index].boothName)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 132, left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  "${boothList?[index].boothName}",
+                                  style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: RaisedButton(
+                                    onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: ((context) =>
+                                                UpperTabBar(boothName: boothList?[index].boothName,boothId: boothList?[index].boothId,)))),
+                                    child: const Text("Open"))),
+                          ]),
+                    )
+                        /*Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset('assets/images/auditoriumbg.png')),
+                    ),*/
+                        )
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
+   String cityImage(String? city){
+    if(city!.contains("Slovakia")){
+      return "assets/images/city1.jpeg";
+    }else if(city!.contains("Lithuania")){
+      return "assets/images/city2.jpeg";
+    }else if(city!.contains("Italy")){
+      return "assets/images/city3.jpeg";
+    }else if(city!.contains("Slovenia")){
+      return "assets/images/city4.jpeg";
+    }else if(city!.contains("Hungary")){
+      return "assets/images/city5.jpeg";
+    }else if(city!.contains("Belgium")){
+      return "assets/images/city7.jpeg";
+    }else if(city!.contains("Europe")){
+      return "assets/images/city6.jpeg";
+    }
+
+     return "assets/images/city1.jpeg";
+
+   }
 
   Widget getVideoVaultPage() {
     return Visibility(
@@ -428,7 +537,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     bottom: 120, left: 10, right: 10),
                                 child: Center(
                                   child: Text(
-                                      "${videoVaultList?[index].linkText}",style: TextStyle(color: Colors.white),),
+                                    "${videoVaultList?[index].linkText}",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
                               ),
                               Padding(
@@ -491,7 +602,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.white,
             ),
           ),
-          drawerList("Profile", 0),
+          drawerList("Lobby", 0),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -499,7 +610,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Lobby", 1),
+          drawerList("Profile", 1),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -547,7 +658,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Booth", 7),
+          drawerList("Networking", 7),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -597,9 +708,9 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-       // ZoomDrawer.of(context)!.toggle();
+        // ZoomDrawer.of(context)!.toggle();
         ZoomDrawer.of(context)!.open();
-       // ZoomDrawer.of(context)!.close();
+        // ZoomDrawer.of(context)!.close();
       },
       icon: const Icon(
         Icons.menu,

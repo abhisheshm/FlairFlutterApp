@@ -1,23 +1,57 @@
+import 'package:flair_app/model/booth_details.dart';
 import 'package:flair_app/screens/home/video_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
+import 'package:html/parser.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../network/client.dart';
 import '../home_page.dart';
 
 class UpperTabBar extends StatefulWidget {
-  const UpperTabBar({Key? key}) : super(key: key);
+  final String? boothName;
+  final int? boothId;
+
+  const UpperTabBar({required this.boothName, this.boothId});
 
   @override
   _UpperTabBarPageState createState() => _UpperTabBarPageState();
 }
 
 class _UpperTabBarPageState extends State<UpperTabBar> {
+  late BoothDetails _boothDetails;
+  var isLoaded = false;
+  var isVideoLoad = false;
+  var isAboutLoad = false;
+  var isBrochuresLoad = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getBoothDetailsData();
+  }
+
+  getBoothDetailsData() async {
+    print("kkkkk");
+    _boothDetails = (await Client().getBoothDetails(widget.boothId.toString()))!;
+    if (_boothDetails != null) {
+      setState(() {
+        isLoaded = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.boothName!),
+      ),
       body: SingleChildScrollView(
-        child: Container(
+        child: isLoaded ? Container(
+          margin: EdgeInsets.only(top: 20),
           width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -28,7 +62,7 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
             children: [
               CustomSlidingSegmentedControl<int>(
                 isStretch: true,
-                initialValue: 2,
+                initialValue: 1,
                 children: const {
                   1: Text('About'),
                   2: Text('Video'),
@@ -57,110 +91,151 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
                 curve: Curves.easeInToLinear,
                 onValueChanged: (v) {
                   if (v == 2) {
+                    setState(() {
+                      isVideoLoad = true;
+                      isAboutLoad = false;
+                      isBrochuresLoad= false;
+
+
+                    });
+
                     print(v);
+                  }else if (v == 3){
+
+                    setState(() {
+                      isAboutLoad = false;
+                      isVideoLoad = false;
+                      isBrochuresLoad= true;
+                    });
+
+                  }else{
+
+                    setState(() {
+                      isAboutLoad = true;
+                      isVideoLoad = false;
+                      isBrochuresLoad= false;
+                    });
+
+
                   }
                   print(v);
+                  print("isVideoLoad$isVideoLoad");
+                  print("isAboutLoad$isAboutLoad");
+                  print("isBrochuresLoad$isBrochuresLoad");
                 },
               ),
               // const SizedBox(height: 16),
               const SizedBox(height: 20),
-              Container(
-                height: 500,
-                margin: EdgeInsets.all(10),
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: <Widget>[
-                    Container(
-                      width: double.maxFinite,
-                      height: 100.0,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(5.0)),
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/card_bg.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.all(10.00)),
-                    Container(
-                      width: double.maxFinite,
-                      height: 120.0,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(5.0)),
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/card_bg.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.all(5.00)),
 
-                    Container(
-                      width: double.maxFinite,
-                      height: 120.0,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(5.0)),
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/card_bg.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.all(5.00)),
+              if (isVideoLoad) ...[
 
-                    Container(
-                      width: double.maxFinite,
-                      height: 120.0,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(5.0)),
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/card_bg.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.all(5.00)),
+               Container(
+                 height: 500,
+                 child:  ListView.builder(
+                   itemCount: _boothDetails.resource?.length,
+                   itemBuilder: (context, index) {
+                     return Container(
+                       margin: const EdgeInsets.all(10),
+                       child: InkWell(
+                         onTap: () {},
+                         child: Column(
+                           children: [
+                             if(_boothDetails.resource?[index].linkType == "3")...[
+                               Card(
+                                 child: Padding(
+                                   padding: EdgeInsets.all(8),
+                                   child: Stack(
+                                       alignment: Alignment.bottomCenter,
+                                       children: <Widget>[
+                                         Image(
+                                           image: new AssetImage(
+                                               'assets/images/auditoriumbg.png'),
+                                         ),
+                                         Padding(
+                                           padding: const EdgeInsets.only(
+                                               bottom: 120, left: 20, right: 10),
+                                           child: Center(
+                                             child: Text(
+                                               "${_boothDetails.resource?[index].linkText}",
+                                               style: TextStyle(color: Colors.white),
+                                             ),
+                                           ),
+                                         ),
+                                         Padding(
+                                             padding: EdgeInsets.all(8.0),
+                                             child: RaisedButton(
+                                                 onPressed: () => _launchInBrowser(
+                                                     _boothDetails.resource?[index].linkContnent),
+                                                 child: const Text("Play Now"))),
+                                       ]),
+                                 ),
+                               )
+                             ]
+                           ],
+                         ),
+                       ),
+                     );
+                   }),)
 
+              ] else if(isBrochuresLoad) ...[
+                Container(
+                  height: 500,
+                  child:  ListView.builder(
+                      itemCount: _boothDetails.resource?.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.all(10),
+                          child: InkWell(
+                            onTap: () {},
+                            child: Column(
+                              children: [
+                                if(_boothDetails.resource?[index].linkType == "4")...[
+                                  Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Stack(
+                                          alignment: Alignment.bottomCenter,
+                                          children: <Widget>[
+                                            Image(
+                                              image: new AssetImage(
+                                                  'assets/images/auditoriumbg.png'),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 120, left: 20, right: 10),
+                                              child: Center(
+                                                child: Text(
+                                                  "${_boothDetails.resource?[index].linkText}",
+                                                  style: TextStyle(color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: RaisedButton(
+                                                    onPressed: () => _launchInBrowser(
+                                                        _boothDetails.resource?[index].linkContnent),
+                                                    child: const Text("View"))),
+                                          ]),
+                                    ),
+                                  )
+                                ]
+                              ],
+                            ),
+                          ),
+                        );
+                      }),)
+              ]else...[
+                Center(
+                  child: Column(children: [
                     Container(
-                      width: double.maxFinite,
-                      height: 120.0,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(5.0)),
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/card_bg.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child:  Text(_boothDetails.booth![0].aboutTitle!,style: const TextStyle(fontWeight: FontWeight.bold),),),
+                    Text(  htmlParse(_boothDetails.booth![0].description!))
+                  ],),
+                )
 
-                    Padding(padding: EdgeInsets.all(5.00)),
-
-                    Container(
-                      width: double.maxFinite,
-                      height: 120.0,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(5.0)),
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/card_bg.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
+              ]
 
               /* ElevatedButton(
               onPressed: () {
@@ -176,10 +251,31 @@ class _UpperTabBarPageState extends State<UpperTabBar> {
             ),*/
             ],
           ),
-        ),
+        ) : const Center(child: CircularProgressIndicator(),),
       ),
     );
+
+
   }
+  Future<void> _launchInBrowser(String? url) async {
+    print("lllllllll ${url}");
+    final uri = Uri.parse(url!);
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
+  }
+   String htmlParse( String html){
+     var doc = parse(html);
+     if(doc.documentElement != null){
+       String parsedstring = doc.documentElement!.text;
+       return parsedstring;
+       //output without space: HelloThis is fluttercampus.com,Bye!
+     }
+     return "";
+   }
 
   ListView test() {
     return ListView.builder(
