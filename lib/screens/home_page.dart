@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ' Like',
       style: optionStyle,
     ),
-   // UpperTabBar(),
+    // UpperTabBar(),
 
     /*  Text(
       ' Home',
@@ -424,7 +424,8 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: boothList?.length,
           itemBuilder: (context, index) {
             return Container(
-              margin: const EdgeInsets.all(20),
+              height: 350,
+              margin: const EdgeInsets.only(left: 5,right: 5,top: 10),
               child: InkWell(
                 onTap: () {
                   /*Navigator.of(context).push(
@@ -439,31 +440,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     Card(
                         child: Padding(
-                      padding: EdgeInsets.all(8),
+                      padding: EdgeInsets.all(1),
                       child: Stack(
                           alignment: Alignment.bottomCenter,
                           children: <Widget>[
-                            Image(
-                              image: new AssetImage(
-                                  cityImage(boothList?[index].boothName)),
+                            Image.asset(
+                              cityImage(boothList?[index].boothName),fit: BoxFit.fill,height: 280,
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
-                                  bottom: 132, left: 10, right: 10),
+                                  bottom: 285, left: 10, right: 10),
                               child: Center(
                                 child: Text(
                                   "${boothList?[index].boothName}",
-                                  style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
                             Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: RaisedButton(
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: ((context) =>
-                                                UpperTabBar(boothName: boothList?[index].boothName,boothId: boothList?[index].boothId,)))),
+                                    onPressed: () => Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: ((context) => UpperTabBar(
+                                                  boothName: boothList?[index]
+                                                      .boothName,
+                                                  boothId:
+                                                      boothList?[index].boothId,
+                                                )))),
                                     child: const Text("Open"))),
                           ]),
                     )
@@ -481,26 +487,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-   String cityImage(String? city){
-    if(city!.contains("Slovakia")){
+  String cityImage(String? city) {
+    if (city!.contains("Slovakia")) {
       return "assets/images/city1.jpeg";
-    }else if(city!.contains("Lithuania")){
+    } else if (city!.contains("Lithuania")) {
       return "assets/images/city2.jpeg";
-    }else if(city!.contains("Italy")){
+    } else if (city!.contains("Italy")) {
       return "assets/images/city3.jpeg";
-    }else if(city!.contains("Slovenia")){
+    } else if (city!.contains("Slovenia")) {
       return "assets/images/city4.jpeg";
-    }else if(city!.contains("Hungary")){
+    } else if (city!.contains("Hungary")) {
       return "assets/images/city5.jpeg";
-    }else if(city!.contains("Belgium")){
+    } else if (city!.contains("Belgium")) {
       return "assets/images/city7.jpeg";
-    }else if(city!.contains("Europe")){
+    } else if (city!.contains("Europe")) {
       return "assets/images/city6.jpeg";
     }
 
-     return "assets/images/city1.jpeg";
-
-   }
+    return "assets/images/city1.jpeg";
+  }
 
   Widget getVideoVaultPage() {
     return Visibility(
