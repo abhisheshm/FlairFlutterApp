@@ -1,3 +1,4 @@
+import 'package:flair_app/chat/chat.dart';
 import 'package:flair_app/model/resource.dart';
 import 'package:flair_app/network/client.dart';
 import 'package:flair_app/screens/login.dart';
@@ -240,14 +241,18 @@ class _HomeScreenState extends State<HomeScreen> {
           child: getAuditoriumPage(),
         );
         break;
-        case "Resource":
+      case "Resource":
         return Center(
           child: getResourcePage(),
         );
         break;
+      case "Chat":
+        return Container(
+          child: Text("chat"),
+        );
     }
-    return const Center(
-      child: Text("Coming Soon"),
+    return Container(
+      child: Chat(),
     );
   }
 
