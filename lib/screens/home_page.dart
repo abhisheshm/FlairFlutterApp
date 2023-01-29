@@ -1,15 +1,16 @@
-import 'package:flair_app/chat/chat.dart';
 import 'package:flair_app/model/resource.dart';
 import 'package:flair_app/network/client.dart';
-import 'package:flair_app/screens/login.dart';
 import 'package:flair_app/screens/student_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flair_app/storage/shared_preference.dart';
 
+import '../chat/chat.dart';
 import '../model/auditorium.dart';
+import '../model/booth_list.dart';
 import '../model/video_vault.dart';
+import '../storage/shared_preference.dart';
 import 'home/auditorium_list.dart';
 import 'home/upper_tab_bar.dart';
 
@@ -48,11 +49,11 @@ class _HomeState extends State<Home> {
     switch (currentIndex) {
       case 0:
         return const HomeScreen(
-          title: "Profile",
+          title: "Lobby",
         );
       case 1:
         return const HomeScreen(
-          title: "Lobby",
+          title: "Profile",
         );
       case 2:
         return const HomeScreen(
@@ -77,7 +78,7 @@ class _HomeState extends State<Home> {
         );
       case 7:
         return const HomeScreen(
-          title: "Booth",
+          title: "Networking",
         );
       case 8:
         return const HomeScreen(
@@ -99,12 +100,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Auditorium>? auditoriumList;
+  late List<Auditorium> auditoriumList;
   List<VideoVault>? videoVaultList;
   List<ResourceDetails>? resourceDetailsList;
+  List<BoothList>? boothList;
   var isLoadedAudi = false;
   var isLoadedVideo = false;
   var isLoadedRes = false;
+  var isLoadedBooth = false;
 
   int selectedIndex = 0;
   final widgetOptions = [
@@ -117,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getBoothList();
     getAuditoriumData();
     getVideoVaultData();
     getResource();
@@ -124,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getAuditoriumData() async {
     print("kkkkk");
-    auditoriumList = await Client().getAuditorium();
+    auditoriumList = (await Client().getAuditorium())!;
     if (auditoriumList != null) {
       setState(() {
         isLoadedAudi = true;
@@ -141,12 +145,23 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
   getResource() async {
     print("kkkkk");
     resourceDetailsList = await Client().getResource();
     if (resourceDetailsList != null) {
       setState(() {
         isLoadedRes = true;
+      });
+    }
+  }
+
+  getBoothList() async {
+    print("kkkkk");
+    boothList = await Client().getBoothList();
+    if (boothList != null) {
+      setState(() {
+        isLoadedBooth = true;
       });
     }
   }
@@ -159,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ' Like',
       style: optionStyle,
     ),
-    UpperTabBar(),
+    // UpperTabBar(),
 
     /*  Text(
       ' Home',
@@ -196,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: DrawerWidget(),
       ),
       body: getPage(widget.title),
-      bottomNavigationBar: Container(
+      /*bottomNavigationBar: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
                 topRight: Radius.circular(30), topLeft: Radius.circular(30)),
@@ -219,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
               selectedItemColor: Colors.blue,
               onTap: _onItemTapped,
             ),
-          )),
+          )),*/
     );
   }
 
@@ -231,6 +246,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget getPage(String page) {
     switch (page) {
+      case "Lobby":
+        return Center(
+          child: getBoothPage(),
+        );
+        break;
+
       case "Video Vault":
         return Center(
           child: getVideoVaultPage(),
@@ -246,13 +267,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: getResourcePage(),
         );
         break;
-      case "Chat":
-        return Container(
-          child: Text("chat"),
+        case "Chat":
+        return const Center(
+          child: Chat(),
         );
+        break;
     }
-    return Container(
-      child: Chat(),
+    return const Center(
+      child: Text("Coming Soon"),
     );
   }
 
@@ -278,39 +300,64 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text("${auditoriumList?[index].title}"),
                     ),*/
 
-              Card(child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: <Widget>[
-                      Image(
-                        image: new AssetImage('assets/images/auditoriumbg.png'),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10),
-                        child: Center(child: Text("${auditoriumList?[index].title}"),),
-                      ),
-                      Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: TextButton(
-                              onPressed: () => _launchInBrowser(auditoriumList?[index].link),
-                              child: const Text("Open")
-                          )
-                      ),
-                    ]
-                ),)
-                    /*Card(
+                    Card(
+                        child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: <Widget>[
+                            Image(
+                              image: new AssetImage(
+                                  'assets/images/auditoriumbg.png'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 120, left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  "${auditoriumList?[index].title}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 100, left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  "Timing:- ${DateFormat('yyyy-MM-dd – kk:mm').format(auditoriumList[index].startDatetime)}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: RaisedButton(
+                                    onPressed: () => _launchInBrowser(
+                                        auditoriumList?[index].link),
+                                    child: const Text("Open"))),
+                          ]),
+                    )
+                        /*Card(
                       child: Padding(
                           padding: const EdgeInsets.all(10),
                           child: Image.asset('assets/images/auditoriumbg.png')),
                     ),*/
-              )],
+                        )
+                  ],
                 ),
               ),
             );
           }),
     );
   }
+
+  String convertDateTime(String? date) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+    DateTime dateTime = dateFormat.parse(date!);
+    return dateTime.toString();
+  }
+
   Widget getResourcePage() {
     return Visibility(
       visible: isLoadedRes,
@@ -333,38 +380,139 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text("${auditoriumList?[index].title}"),
                     ),*/
 
-              Card(child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: <Widget>[
-                      Image(
-                        image: new AssetImage('assets/images/auditoriumbg.png'),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10),
-                        child: Center(child: Text("${resourceDetailsList?[index].linkText}"),),
-                      ),
-                      Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: TextButton(
-                              onPressed: () => _launchInBrowser(resourceDetailsList?[index].linkLink),
-                              child: const Text("Open")
-                          )
-                      ),
-                    ]
-                ),)
-                    /*Card(
+                    Card(
+                        child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: <Widget>[
+                            Image(
+                              image: new AssetImage(
+                                  'assets/images/auditoriumbg.png'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 120, left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  "${resourceDetailsList?[index].linkText}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: RaisedButton(
+                                    onPressed: () => _launchInBrowser(
+                                        resourceDetailsList?[index].linkLink),
+                                    child: const Text("Open"))),
+                          ]),
+                    )
+                        /*Card(
                       child: Padding(
                           padding: const EdgeInsets.all(10),
                           child: Image.asset('assets/images/auditoriumbg.png')),
                     ),*/
-              )],
+                        )
+                  ],
                 ),
               ),
             );
           }),
     );
+  }
+
+  Widget getBoothPage() {
+    return Visibility(
+      visible: isLoadedBooth,
+      replacement: const Center(
+        child: CircularProgressIndicator(),
+      ),
+      child: ListView.builder(
+          itemCount: boothList?.length,
+          itemBuilder: (context, index) {
+            return Container(
+              height: 350,
+              margin: const EdgeInsets.only(left: 5,right: 5,top: 10),
+              child: InkWell(
+                onTap: () {
+                  /*Navigator.of(context).push(
+                      MaterialPageRoute(builder: ((context) => UpperTabBar())));*/
+                },
+                child: Column(
+                  children: [
+                    /*Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${auditoriumList?[index].title}"),
+                    ),*/
+
+                    Card(
+                        child: Padding(
+                      padding: EdgeInsets.all(1),
+                      child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: <Widget>[
+                            Image.asset(
+                              cityImage(boothList?[index].boothName),fit: BoxFit.fill,height: 280,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 285, left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  "${boothList?[index].boothName}",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: RaisedButton(
+                                    onPressed: () => Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: ((context) => UpperTabBar(
+                                                  boothName: boothList?[index]
+                                                      .boothName,
+                                                  boothId:
+                                                      boothList?[index].boothId,
+                                                )))),
+                                    child: const Text("Open"))),
+                          ]),
+                    )
+                        /*Card(
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset('assets/images/auditoriumbg.png')),
+                    ),*/
+                        )
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
+  String cityImage(String? city) {
+    if (city!.contains("Slovakia")) {
+      return "assets/images/city1.jpeg";
+    } else if (city!.contains("Lithuania")) {
+      return "assets/images/city2.jpeg";
+    } else if (city!.contains("Italy")) {
+      return "assets/images/city3.jpeg";
+    } else if (city!.contains("Slovenia")) {
+      return "assets/images/city4.jpeg";
+    } else if (city!.contains("Hungary")) {
+      return "assets/images/city5.jpeg";
+    } else if (city!.contains("Belgium")) {
+      return "assets/images/city7.jpeg";
+    } else if (city!.contains("Europe")) {
+      return "assets/images/city6.jpeg";
+    }
+
+    return "assets/images/city1.jpeg";
   }
 
   Widget getVideoVaultPage() {
@@ -379,37 +527,43 @@ class _HomeScreenState extends State<HomeScreen> {
             return Container(
               margin: const EdgeInsets.all(10),
               child: InkWell(
-                onTap: () {
-
-                },
+                onTap: () {},
                 child: Column(
                   children: [
-                   /* Padding(
+                    /* Padding(
                       padding: const EdgeInsets.all(10),
                       child: Text("${videoVaultList?[index].linkText}"),
                     ),*/
 
-                    Card(child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: <Widget>[
-                          Image(
-                            image: new AssetImage('assets/images/auditoriumbg.png'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10),
-                            child: Center(child: Text("${videoVaultList?[index].linkText}"),),
-                          ),
-                          Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: TextButton(
-                                  onPressed: () => _launchInBrowser(videoVaultList?[index].linkContnent),
-                                  child: const Text("Play Now")
-                              )
-                          ),
-                        ]
-                    ),),)
+                    Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: <Widget>[
+                              Image(
+                                image: new AssetImage(
+                                    'assets/images/auditoriumbg.png'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 120, left: 10, right: 10),
+                                child: Center(
+                                  child: Text(
+                                    "${videoVaultList?[index].linkText}",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: RaisedButton(
+                                      onPressed: () => _launchInBrowser(
+                                          videoVaultList?[index].linkContnent),
+                                      child: const Text("Play Now"))),
+                            ]),
+                      ),
+                    )
                     /*Card(
                       child: Padding(
                           padding: const EdgeInsets.all(10),
@@ -479,7 +633,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.white,
             ),
           ),
-          drawerList(uName, 0),
+          drawerList("Lobby", 0),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -487,7 +641,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Lobby", 1),
+          drawerList("Profile", 1),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -535,7 +689,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Booth", 7),
+          drawerList("Networking", 7),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -553,18 +707,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
     );
   }
 
-  Future signOutUser() async {
-    await removeUserName();
-    await removeUserId();
-    Navigator.of(context).push(MaterialPageRoute(builder: ((context) => StudentLogin())));
-  }
-
   Widget drawerList(String text, int index) {
     return GestureDetector(
       onTap: () {
-        if(index == 8){
-          signOutUser();
-        }
+        ZoomDrawer.of(context)!.close();
+        widget.setIndex(index);
       },
       child: Container(
         margin: EdgeInsets.only(left: 20, bottom: 12),
@@ -592,8 +739,9 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-        print("hre");
-        ZoomDrawer.of(context)!.toggle();
+        // ZoomDrawer.of(context)!.toggle();
+        ZoomDrawer.of(context)!.open();
+        // ZoomDrawer.of(context)!.close();
       },
       icon: const Icon(
         Icons.menu,
