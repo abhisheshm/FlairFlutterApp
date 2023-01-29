@@ -34,6 +34,7 @@ dependencies:
   custom_sliding_segmented_control: ^1.7.3
   get: ^4.6.5
   url_launcher: ^6.0.10
+  intl: ^0.18.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -41,6 +42,7 @@ dependencies:
   shared_preferences: ^2.0.15
   file_picker: ^5.2.5
   flutter_linkify: ^5.0.2
+  html: ^0.15.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +70,13 @@ flutter:
     - assets/images/logo.png
     - assets/images/card_bg.png
     - assets/images/auditoriumbg.png
+    - assets/images/city1.jpeg
+    - assets/images/city2.jpeg
+    - assets/images/city3.jpeg
+    - assets/images/city4.jpeg
+    - assets/images/city5.jpeg
+    - assets/images/city6.jpeg
+    - assets/images/city7.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

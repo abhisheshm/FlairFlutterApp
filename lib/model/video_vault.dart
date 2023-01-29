@@ -20,10 +20,10 @@ class VideoVault {
     this.active,
   });
 
-  String? id;
-  String? fairId;
-  String? boothId;
-  String? linkType;
+  int? id;
+  int? fairId;
+  int? boothId;
+  int? linkType;
   String? linkText;
   String? linkLink;
   String? linkContnent;
