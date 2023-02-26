@@ -1,4 +1,9 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:flair_app/chat/chat_file.dart';
+import 'package:flair_app/chat/chat_image.dart';
+import 'package:path/path.dart' as path;
+
 
 import 'package:flair_app/model/room_data.dart';
 import 'package:flair_app/model/send_message_response.dart';
@@ -14,11 +19,14 @@ class ChatMessage {
   String messageType;
   String senderName;
   bool isFile;
+  int id;
+
   ChatMessage(
       {required this.messageContent,
       required this.messageType,
       required this.senderName,
-      required this.isFile});
+      required this.isFile,
+      required this.id});
 }
 
 class ChatDetailPage extends StatefulWidget {
@@ -52,8 +60,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   messageContent:
                       chat.isFile == "1" ? chat.fileName : chat.message,
                   messageType: (chat.userId == chat_id) ? "sender" : "receiver",
-                  isFile: (chat.isFile == "1") && false,
-                  senderName: chat.name),
+                  isFile: (chat.isFile == "1"),
+                  senderName: chat.name,
+                  id: int.parse(chat.userId)),
             )
           });
       setState(() {
@@ -82,6 +91,33 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       },
     );
   }
+
+  Color _generateRandomColor(int number) {
+    Color c = Color.fromARGB(
+      255,
+      pow(number,3).toInt()%255,
+      pow(number,6).toInt()%255,
+      pow(number,9).toInt()%255,
+    );
+    return c;
+  }
+
+  String getFileTypeFromUrl(String url) {
+    String extension = path.extension(url);
+    switch (extension) {
+      case '.jpg':
+      case '.jpeg':
+      case '.png':
+        return 'image';
+      case '.mp4':
+        return 'video';
+      case '.pdf':
+        return 'pdf';
+      // add more cases as needed
+      default:
+        return 'unknown';
+    }
+}
 
   @override
   void initState() {
@@ -182,7 +218,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                       messages[index].senderName,
                                       style: TextStyle(
                                           fontSize: 15,
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.bold,
+                                          color: _generateRandomColor(messages[index].id)),
                                     ),
                                   if (!messages[index].isFile)
                                     Linkify(
@@ -203,35 +240,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                           color: Colors.lightBlue),
                                     )
                                   else
-                                    InkWell(
-                                        onTap: () async {
-                                          // _permissionReady = await _checkPermission();
-                                          // if (_permissionReady) {
-                                          //   await _prepareSaveDir();
-                                          //   try {
-                                          //     await Dio().download("https://******/image.jpg",
-                                          //         _localPath + "/" + "filename.jpg");
-                                          //     print("Download Completed.");
-                                          //   } catch (e) {
-                                          //     print("Download Failed.\n\n" + e.toString());
-                                          //   }
-                                          // }
-                                        },
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                margin: EdgeInsets.only(top: 8),
-                                                decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.grey
-                                                        .withOpacity(0.5)),
-                                                padding: EdgeInsets.all(8),
-                                                child: Icon(Icons.file_open,
-                                                    color: Colors.black),
-                                              )
-                                            ]))
+                                    if(getFileTypeFromUrl(messages[index].messageContent) == "image")
+                                      ChatImage(imageUrl: messages[index].messageContent)
+                                    else
+                                      ChatFile(fileUrl:  messages[index].messageContent)
                                 ]),
                           ),
                         ),
