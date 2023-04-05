@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import '../model/booth_details.dart';
 import '../model/booth_list.dart';
+import '../utils/messageDialog.dart';
 
 class Client {
   Future<List<Auditorium>?> getAuditorium() async {
@@ -27,6 +28,9 @@ class Client {
     if (response.statusCode == 200) {
       var json = response.body;
       return auditoriumFromJson(json);
+    }else{
+      const DialogMessage();
+
     }
     return null;
   }
@@ -45,6 +49,9 @@ class Client {
     if (response.statusCode == 200) {
       var json = response.body;
       return videoVaultFromJson(json);
+    }else{
+      const DialogMessage();
+
     }
     return null;
   }
@@ -151,6 +158,8 @@ class Client {
     if (response.statusCode == 200) {
       var json = await response.stream.bytesToString();
       return sendMessageResponseFromJson(json);
+    }else{
+      const DialogMessage();
     }
     return null;
   }
@@ -170,6 +179,8 @@ class Client {
     if (response.statusCode == 200) {
       var json = response.body;
       return boothListFromJson(json);
+    }else{
+      const DialogMessage();
     }
     return null;
   }
@@ -189,6 +200,9 @@ class Client {
     if (response.statusCode == 200) {
       var json = response.body;
       return resourceDetailsFromJson(json);
+    }else{
+      const DialogMessage();
+
     }
     return null;
   }
@@ -209,6 +223,8 @@ class Client {
     if (response.statusCode == 200) {
       var json = response.body;
       return boothDetailsFromJson(json);
+    }else{
+      const DialogMessage();
     }
     return null;
   }

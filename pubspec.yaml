@@ -47,6 +47,7 @@ dependencies:
   path_provider: ^2.0.13
   dio: ^5.0.1
   open_filex: ^4.3.2
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,28 @@ flutter:
     - assets/images/city5.jpeg
     - assets/images/city6.jpeg
     - assets/images/city7.jpeg
+    - assets/images/bg_looby.jpeg
+    - assets/images/city8.png
+    - assets/images/europe.png
+    - assets/images/lobby1.jpg
+    - assets/images/slovia.png
+    - assets/images/hungary.png
+    - assets/images/slovakia.png
+    - assets/images/france.png
+    - assets/images/lithuania.png
+    - assets/images/poland.png
+    - assets/images/finland.png
+    - assets/images/freeEducation.png
+    - assets/images/malta.png
+    - assets/images/republic.png
+    - assets/images/UK.png
+    - assets/images/germany.png
+    - assets/images/italy.png
+    - assets/images/sweden.png
+    - assets/images/spain.png
+    - assets/images/portgal.png
+    - assets/images/mgEurope.png
+    - assets/images/latvia.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

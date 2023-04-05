@@ -1,5 +1,9 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flair_app/model/resource.dart';
 import 'package:flair_app/network/client.dart';
+import 'package:flair_app/screens/home/exihibit_hall.dart';
+import 'package:flair_app/screens/home/video%20vault.dart';
+import 'package:flair_app/screens/login.dart';
 import 'package:flair_app/screens/student_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
@@ -23,6 +27,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int currentIndex = 0;
+  bool auth = false;
 
   //sts
 
@@ -32,57 +37,64 @@ class _HomeState extends State<Home> {
       menuScreen: DrawerScreen(
         setIndex: (index) {
           setState(() {
+            print("lllll${index}");
             currentIndex = index;
           });
         },
       ),
-      mainScreen: currentScreen(),
+      mainScreen: currentScreen(auth),
       borderRadius: 30,
       showShadow: true,
+      drawerShadowsBackgroundColor: Colors.grey,
+      slideWidth: MediaQuery.of(context).size.width * 0.65,
       angle: 0.0,
-      slideWidth: 200,
       menuBackgroundColor: Colors.blue,
     );
   }
 
-  Widget currentScreen() {
+  Widget currentScreen(auth) {
     switch (currentIndex) {
       case 0:
         return const HomeScreen(
           title: "Lobby",
+          currentIndex: false,
         );
-      case 1:
+      /* case 1:
         return const HomeScreen(
           title: "Profile",
-        );
-      case 2:
+        );*/
+      case 1:
         return const HomeScreen(
           title: "Exhibit Hall",
         );
-      case 3:
+      case 2:
         return const HomeScreen(
           title: "Auditorium",
         );
 
-      case 4:
+      case 3:
         return const HomeScreen(
           title: "Resource",
         );
-      case 5:
+      case 4:
         return const HomeScreen(
           title: "Information Desk",
         );
-      case 6:
+      case 5:
         return const HomeScreen(
           title: "Video Vault",
         );
-      case 7:
+      case 6:
         return const HomeScreen(
           title: "Networking",
         );
-      case 8:
+      case 7:
         return const HomeScreen(
           title: "Chat",
+        );
+        case 8:
+        return const HomeScreen(
+          title: "Sign-out",
         );
       default:
         return const HomeScreen();
@@ -92,8 +104,10 @@ class _HomeState extends State<Home> {
 
 class HomeScreen extends StatefulWidget {
   final String title;
+  final bool currentIndex;
 
-  const HomeScreen({Key? key, this.title = "Home"}) : super(key: key);
+  const HomeScreen({Key? key, this.title = "Home", this.currentIndex = false})
+      : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -114,6 +128,50 @@ class _HomeScreenState extends State<HomeScreen> {
     Text('Beer List'),
     Text('Add new beer'),
     Text('Favourites'),
+  ];
+
+/*
+  String cityImage(String? city) {
+    if (city!.contains("Slovakia")) {
+      return "assets/images/city1.jpeg";
+    } else if (city!.contains("Lithuania")) {
+      return "assets/images/city2.jpeg";
+    } else if (city!.contains("Italy")) {
+      return "assets/images/city3.jpeg";
+    } else if (city!.contains("Slovenia")) {
+      return "assets/images/city4.jpeg";
+    } else if (city!.contains("Hungary")) {
+      return "assets/images/city5.jpeg";
+    } else if (city!.contains("Belgium")) {
+      return "assets/images/city7.jpeg";
+    } else if (city!.contains("Europe")) {
+      return "assets/images/city6.jpeg";
+    }
+
+    return "assets/images/city1.jpeg";
+  }
+*/
+
+  final List<String> imgList = [
+    "assets/images/europe.png",
+    "assets/images/slovia.png",
+    "assets/images/hungary.png",
+    "assets/images/slovakia.png",
+    "assets/images/lithuania.png",
+    "assets/images/france.png",
+    "assets/images/poland.png",
+    "assets/images/finland.png",
+    "assets/images/freeEducation.png",
+    "assets/images/malta.png",
+    "assets/images/republic.png",
+    "assets/images/UK.png",
+    "assets/images/germany.png",
+    "assets/images/italy.png",
+    "assets/images/sweden.png",
+    "assets/images/spain.png",
+    "assets/images/portgal.png",
+    "assets/images/mgEurope.png",
+    "assets/images/latvia.png",
   ];
 
   @override
@@ -210,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         leading: DrawerWidget(),
       ),
-      body: getPage(widget.title),
+      body: getPage(widget.title, widget.currentIndex),
       /*bottomNavigationBar: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -240,18 +298,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void onItemTapped(int index) {
     setState(() {
+      print("lllll");
       selectedIndex = index;
     });
   }
 
-  Widget getPage(String page) {
+  Widget getPage(String page, bool currentIndex) {
+    print(page);
     switch (page) {
       case "Lobby":
         return Center(
-          child: getBoothPage(),
+          child: getBoothPage(currentIndex),
         );
         break;
 
+      case "Exhibit Hall":
+        return Center(
+          child: getExhibitHallPage(),
+        );
       case "Video Vault":
         return Center(
           child: getVideoVaultPage(),
@@ -267,14 +331,49 @@ class _HomeScreenState extends State<HomeScreen> {
           child: getResourcePage(),
         );
         break;
-        case "Chat":
+      case "Chat":
         return const Center(
           child: Chat(),
+        );
+        break;
+      case "Sign-out":
+        return Center(
+          child: dialogOut(),
         );
         break;
     }
     return const Center(
       child: Text("Coming Soon"),
+    );
+  }
+
+
+  Widget dialogOut() {
+    print("ppppp");
+    return AlertDialog(
+      title: Text('Logout'),           // To display the title it is optional
+      content: Text('Are you sure?'),   // Message which will be pop up on the screen
+      // Action widget which will provide the user to acknowledge the choice
+      actions: [
+        FlatButton(                     // FlatButton widget is used to make a text to work like a button
+          textColor: Colors.black,
+          onPressed: () {
+            ZoomDrawer.of(context)!.open();
+          },             // function used to perform after pressing the button
+          child: Text('CANCEL'),
+        ),
+        FlatButton(
+          textColor: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+
+            /* Navigator.of(context)
+                .push(MaterialPageRoute(builder: ((context) => Login())));*/
+
+          },
+          child: Text('ACCEPT'),
+        ),
+      ],
     );
   }
 
@@ -422,7 +521,290 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget getBoothPage() {
+  Widget getBoothPage(bool selectedIndex) {
+    final List<Widget> imageSliders = imgList
+        .map((item) => Container(
+              child: Container(
+                margin: EdgeInsets.all(5.0),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: Stack(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: () {
+                            if (item.contains("slovia")) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName: "Study in Slovenia",
+                                        boothId: 5,
+                                      ))));
+                            } else if (item.contains("lithuania")) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName: "Study in Lithuania",
+                                        boothId: 9,
+                                      ))));
+                            } else if (item.contains("hungary")) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName: "Study in Hungary",
+                                        boothId: 6,
+                                      ))));
+                            } else if (item.contains("slovakia")) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName: "Study in Slovakia",
+                                        boothId: 4,
+                                      ))));
+                            } else if (item.contains("finland")) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in Finland \/ Denmark",
+                                        boothId: 11,
+                                      ))));
+                            } else if(item.contains("poland")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in Poland",
+                                        boothId: 8,
+                                      ))));
+                            }else if(item.contains("france")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in France",
+                                        boothId: 10,
+                                      ))));
+                            }else if(item.contains("freeEducation")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Free Education ( Austria\/ Switzerland\/ Germany\/ Luxembourg \/ Norway\/ Iceland\/ Liechtenstein)",
+                                        boothId: 12,
+                                      ))));
+                            }else if(item.contains("malta")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in Malta\/ Greece \/ Croatia",
+                                        boothId: 13,
+                                      ))));
+                            }else if(item.contains("republic")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in Czech Republic",
+                                        boothId: 2,
+                                      ))));
+                            }else if(item.contains("UK")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in UK\/Ireland",
+                                        boothId: 1,
+                                      ))));
+                            }
+
+                            else if(item.contains("germany")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in Germany",
+                                        boothId: 21,
+                                      ))));
+                            } else if(item.contains("italy")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in italy",
+                                        boothId: 20,
+                                      ))));
+                            }else if(item.contains("sweden")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in sweden",
+                                        boothId: 19,
+                                      ))));
+                            }else if(item.contains("spain")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in spain",
+                                        boothId: 18,
+                                      ))));
+                            }else if(item.contains("portgal")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in portugal",
+                                        boothId: 17,
+                                      ))));
+                            }else if(item.contains("mgEurope")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in Management Europe",
+                                        boothId: 16,
+                                      ))));
+                            }else if(item.contains("latvia")){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => const UpperTabBar(
+                                        boothName:
+                                            "Study in latvia",
+                                        boothId: 15,
+                                      ))));
+                            }
+                          },
+                          child: Image.asset(item,
+                              fit: BoxFit.fill, width: 1000.0,height: 230,),
+                        ),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 0, 0, 0),
+                                  Color.fromARGB(0, 0, 0, 0)
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                              ),
+                            ),
+                            /*padding: EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 20.0),
+                    child: Text(
+                      'No. ${imgList.indexOf(item)} image',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),*/
+                          ),
+                        ),
+                      ],
+                    )),
+              ),
+            ))
+        .toList();
+
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/lobby1.jpg"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+              margin: const EdgeInsets.only(top: 70),
+              child: CarouselSlider(
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    enlargeCenterPage: false,
+                  ),
+                  items: imageSliders
+
+                  /* imgList
+                .map((item) => Container(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: ((context) => UpperTabBar(
+                                    boothName: boothList?[imgList.length - 1]
+                                        .boothName,
+                                    boothId:
+                                        boothList?[imgList.length - 1].boothId,
+                                  ))));
+                        },
+                        child: Center(
+                            child: Image.asset(item,
+                                fit: BoxFit.fitHeight, width: 1000)),
+                      ),
+                    ))
+                .toList(),*/
+                  )),
+          Expanded(
+            child: Column(
+              children: [
+                /*Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text("${auditoriumList?[index].title}"),
+                    ),*/
+
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: ((context) => AuditoriumList(
+                              auditoriumList: auditoriumList,
+                            ))));
+                    setState(() {
+                      _selectedIndex == true;
+                      //getPage("Auditorium",2);
+                    });
+                  },
+                  child: Container(
+                      margin: const EdgeInsets.only(
+                          top: 20, bottom: 30, left: 30, right: 30),
+                      child: const Card(
+                          child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Center(
+                          child: Text("Auditorium"),
+                        ),
+                      ))),
+                ),
+                InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => ExihbitList(
+                                boothList: boothList,
+                              ))));
+                    },
+                    child: Container(
+                        margin: const EdgeInsets.only(
+                            top: 0, bottom: 30, left: 30, right: 30),
+                        child: const Card(
+                            child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Center(
+                            child: Text("Exhibition Hall"),
+                          ),
+                        )))),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: ((context) => VideoList(
+                              videoVaultList: videoVaultList,
+                            ))));
+                  },
+                  child: Container(
+                      margin: const EdgeInsets.only(
+                          top: 0, bottom: 30, left: 30, right: 30),
+                      child: const Card(
+                          child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Center(
+                          child: Text("Video vault"),
+                        ),
+                      ))),
+                )
+              ],
+            ),
+          )
+        ],
+      ) /* add child content here */,
+    );
+  }
+
+  Widget getExhibitHallPage() {
     return Visibility(
       visible: isLoadedBooth,
       replacement: const Center(
@@ -433,7 +815,7 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, index) {
             return Container(
               height: 350,
-              margin: const EdgeInsets.only(left: 5,right: 5,top: 10),
+              margin: const EdgeInsets.only(left: 5, right: 5, top: 10),
               child: InkWell(
                 onTap: () {
                   /*Navigator.of(context).push(
@@ -453,7 +835,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           alignment: Alignment.bottomCenter,
                           children: <Widget>[
                             Image.asset(
-                              cityImage(boothList?[index].boothName),fit: BoxFit.fill,height: 280,
+                              cityImage(boothList?[index].boothName),
+                              fit: BoxFit.fill,
+                              height: 280,
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
@@ -599,22 +983,24 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreenState extends State<DrawerScreen> {
-
   String uName = "";
 
   @override
   void initState() {
     super.initState();
     getUserName().then((username) => {
-      if(username == null) {
-        Navigator.of(context).push(MaterialPageRoute(builder: ((context) => StudentLogin())))
-      }
-      else{
-        setState(() {
-          uName = username;
-        })
-      }
-    });
+          if (username == null)
+            {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: ((context) => StudentLogin())))
+            }
+          else
+            {
+              setState(() {
+                uName = username;
+              })
+            }
+        });
   }
 
   @override
@@ -625,14 +1011,40 @@ class _DrawerScreenState extends State<DrawerScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(left: 40, bottom: 40),
-            child: const Icon(
-              Icons.person_pin,
-              size: 80,
-              color: Colors.white,
+          Row(children: [
+
+            Container(
+              margin: const EdgeInsets.only(left: 40, bottom: 0),
+              child: const Icon(
+                Icons.person_pin,
+                size: 80,
+                color: Colors.white,
+              ),
             ),
-          ),
+
+            Container(
+              width: 20,
+              height: 20,
+
+              margin: const EdgeInsets.only(left: 40, bottom: 200),
+              child: Center(child: IconButton(
+                onPressed: () {
+                  ZoomDrawer.of(context)!.close();
+                },
+                // ZoomDrawer.of(context)!.toggle();
+                // ZoomDrawer.of(context)!.close();
+
+                icon:  const Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ),
+              ),)
+
+
+            ),
+
+          ],),
+
           drawerList("Lobby", 0),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
@@ -641,7 +1053,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Profile", 1),
+          /*  drawerList("Profile", 1),
+          Container(
+            margin: const EdgeInsets.only(left: 10, bottom: 10),
+            child: const Divider(
+              thickness: 2,
+              color: Colors.black12,
+            ),
+          ),*/
+          drawerList("Exhibit Hall", 1),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -649,7 +1069,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Exhibit Hall", 2),
+          drawerList("Auditorium", 2),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -657,7 +1077,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Auditorium", 3),
+          drawerList("Resource", 3),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -665,7 +1085,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Resource", 4),
+          /*drawerList("Information desk", 4),
+          Container(
+            margin: const EdgeInsets.only(left: 10, bottom: 10),
+            child: const Divider(
+              thickness: 2,
+              color: Colors.black12,
+            ),
+          ),*/
+          drawerList("Video Vault", 5),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -673,7 +1101,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Information desk", 5),
+          /*drawerList("Networking", 6),
+          Container(
+            margin: const EdgeInsets.only(left: 10, bottom: 10),
+            child: const Divider(
+              thickness: 2,
+              color: Colors.black12,
+            ),
+          ),*/
+          drawerList("Chat", 7),
           Container(
             margin: const EdgeInsets.only(left: 10, bottom: 10),
             child: const Divider(
@@ -681,26 +1117,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               color: Colors.black12,
             ),
           ),
-          drawerList("Video Vault", 6),
-          Container(
-            margin: const EdgeInsets.only(left: 10, bottom: 10),
-            child: const Divider(
-              thickness: 2,
-              color: Colors.black12,
-            ),
-          ),
-          drawerList("Networking", 7),
-          Container(
-            margin: const EdgeInsets.only(left: 10, bottom: 10),
-            child: const Divider(
-              thickness: 2,
-              color: Colors.black12,
-            ),
-          ),
-          drawerList("Chat", 8),
-          Container(
-            margin: const EdgeInsets.only(top: 20, left: 10, bottom: 20),
-          ),
+
           drawerList("Sign-out", 8),
         ],
       ),
@@ -732,21 +1149,48 @@ class _DrawerScreenState extends State<DrawerScreen> {
   }
 }
 
-class DrawerWidget extends StatelessWidget {
-  const DrawerWidget({Key? key}) : super(key: key);
+class DrawerWidget extends StatefulWidget {
+
+
+  @override
+  State<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+ bool close = true;
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        // ZoomDrawer.of(context)!.toggle();
-        ZoomDrawer.of(context)!.open();
-        // ZoomDrawer.of(context)!.close();
-      },
-      icon: const Icon(
-        Icons.menu,
-        color: Colors.blue,
-      ),
-    );
+    if(close){
+      return IconButton(
+          onPressed: () {
+            print("llll");
+            ZoomDrawer.of(context)!.open();
+            //ZoomDrawer.of(context)!.toggle();
+            // ZoomDrawer.of(context)!.close();
+          },
+          icon:  const Icon(
+            Icons.menu,
+            color: Colors.blue,
+          )
+      );
+
+    }else{
+      return IconButton(
+          onPressed: () {
+            print("llll");
+            ZoomDrawer.of(context)!.open();
+            close = false;
+            //ZoomDrawer.of(context)!.toggle();
+            // ZoomDrawer.of(context)!.close();
+          },
+          icon:  const Icon(
+            Icons.close,
+            color: Colors.blue,
+          )
+      );
+
+    }
   }
+
 }
