@@ -135,7 +135,7 @@ class _StudentLoginDemoState extends State<StudentLoginDemo> {
                 ),
               ),
             ),
-            TextButton(
+            /*TextButton(
               onPressed: (){
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => Login()));
               },
@@ -147,7 +147,7 @@ class _StudentLoginDemoState extends State<StudentLoginDemo> {
             const SizedBox(
               height: 0,
             ),
-            const Text('Don'"t'have an account? Sign up" )
+            const Text('Don'"t'have an account? Sign up" )*/
           ],
         ),
       ),

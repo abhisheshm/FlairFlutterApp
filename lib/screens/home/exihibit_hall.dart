@@ -50,18 +50,24 @@ class _AuditoriumListState extends State<ExihbitList> {
 
                         Card(
                             child: Padding(
-                              padding: EdgeInsets.all(1),
+                              padding: EdgeInsets.all(5),
                               child: Stack(
                                   alignment: Alignment.bottomCenter,
                                   children: <Widget>[
-                                    Image.asset(
+/*                                    Image.asset(
                                       cityImage(widget.boothList?[index].boothName),
                                       fit: BoxFit.fill,
                                       height: 280,
+                                    ),*/
+                                    Image.network(
+                                      cityImageNetwork(widget.boothList?[index].boothId),
+                                      scale: 1.0,
+                                      fit: BoxFit.fill,
+                                      height: 250,
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          bottom: 285, left: 10, right: 10),
+                                          bottom: 255, left: 10, right: 10,top: 20),
                                       child: Center(
                                         child: Text(
                                           "${widget.boothList?[index].boothName}",
@@ -107,6 +113,12 @@ class _AuditoriumListState extends State<ExihbitList> {
     )) {
       throw 'Could not launch $url';
     }
+  }
+
+  String cityImageNetwork(int? boothId){
+    print("https://hef.e-scheduler.com//template/images/booths/booth$boothId.png");
+    return "https://hef.e-scheduler.com//template/images/booths/booth$boothId.png";
+    //return "https://hef.e-scheduler.com//template/images/booths/booth3.png";
   }
 
   String cityImage(String? city) {
